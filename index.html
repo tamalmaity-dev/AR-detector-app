@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+    <style>
+      /* --- All your previous CSS goes here --- */
+      /* (body, .ui-overlay, #start-ui, #startButton, #toast-alert, #playButton) */
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        margin: 0;
+      }
+      .ui-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        color: white;
+        text-align: center;
+      }
+      #start-ui h1 {
+        font-size: 2rem;
+        font-weight: 700;
+      }
+      #startButton {
+        padding: 16px 32px;
+        font-size: 1.2rem;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      }
+      #toast-alert {
+        visibility: hidden; 
+        opacity: 0;
+        position: absolute;
+        bottom: 90px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #333;
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-size: 1rem;
+        z-index: 10001;
+        transition: visibility 0.3s, opacity 0.3s ease-out;
+      }
+      #toast-alert.show {
+        visibility: visible;
+        opacity: 1;
+      }
+      #playButton {
+        display: none; 
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10001;
+        padding: 14px 28px;
+        font-size: 1rem;
+        font-weight: 600;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 30px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <div id="toast-alert"></div>
+    <button id="playButton">Play</button>
+
+    <div id="start-ui" class="ui-overlay">
+      <h1>My AR Experience</h1>
+      <p>Click below to start</p>
+      <button id="startButton">Start AR</button>
+    </div>
+
+    <a-scene
+      id="ar-scene"
+      mindar-image="imageTargetSrc: ./targets.mind;"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false"
+    >
+      <a-camera
+        position="0 0 0"
+        look-controls="enabled: false"
+      ></a-camera>
+
+      <a-assets>
+        <video 
+          id="video-1" 
+          src="./bird-video.mp4" 
+          loop="true" crossOrigin="anonymous" playsinline webkit-playsinline muted="true"
+        ></video>
+        <video 
+          id="video-2" 
+          src="./tiger-video.mp4" 
+          loop="true" crossOrigin="anonymous" playsinline webkit-playsinline muted="true"
+        ></video>
+        <video 
+          id="video-3" 
+          src="./anindya-sir-video.mp4" 
+          loop="true" crossOrigin="anonymous" playsinline webkit-playsinline muted="true"
+        ></video>
+      </a-assets>
+      
+      <a-entity id="target-0" mindar-image-target="targetIndex: 0">
+        <a-video
+          src="#video-1"
+          width="1"
+          height="0.75"
+        ></a-video>
+      </a-entity>
+
+      <a-entity id="target-1" mindar-image-target="targetIndex: 1">
+        <a-video
+          src="#video-2"
+          width="1"
+          height="1" 
+        ></a-video>
+      </a-entity>
+      
+      <a-entity id="target-2" mindar-image-target="targetIndex: 2">
+        <a-video
+          src="#video-3"
+          width="1"
+          height="1.2" ></a-video>
+      </a-entity>
+
+    </a-scene>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Get UI elements
+        const sceneEl = document.querySelector("#ar-scene");
+        const startUI = document.querySelector("#start-ui");
+        const startButton = document.querySelector("#startButton");
+        const playButton = document.querySelector("#playButton");
+        const toast = document.querySelector("#toast-alert");
+
+        // Get video assets
+        const video1 = document.querySelector("#video-1");
+        const video2 = document.querySelector("#video-2");
+        const video3 = document.querySelector("#video-3"); // NEW
+
+        // Get target entities
+        const target0 = document.querySelector("#target-0");
+        const target1 = document.querySelector("#target-1");
+        const target2 = document.querySelector("#target-2"); // NEW
+        
+        // Keep track of which video is active
+        let currentActiveVideo = null;
+
+        // Start Button Logic
+        startButton.addEventListener("click", () => {
+          startUI.style.display = "none";
+          sceneEl.systems["mindar-image-system"].start();
+          
+          // "Prime" ALL videos
+          video1.play(); video1.pause();
+          video2.play(); video2.pause();
+          video3.play(); video3.pause(); // NEW
+        });
+
+        // --- Target 0 (Bird) Events ---
+        target0.addEventListener("targetFound", () => {
+          console.log("Target 0 Found!");
+          video1.play();
+          currentActiveVideo = video1;
+          
+          toast.textContent = "Bird Target Found!";
+          toast.classList.add("show");
+          playButton.textContent = "Pause";
+          playButton.style.display = "block";
+        });
+        target0.addEventListener("targetLost", () => {
+          console.log("Target 0 Lost.");
+          video1.pause();
+          toast.classList.remove("show");
+          playButton.style.display = "none";
+          if (currentActiveVideo === video1) currentActiveVideo = null;
+        });
+        
+        // --- Target 1 (Tiger) Events ---
+        target1.addEventListener("targetFound", () => {
+          console.log("Target 1 Found!");
+          video2.play();
+          currentActiveVideo = video2;
+
+          toast.textContent = "Tiger Target Found!";
+          toast.classList.add("show");
+          playButton.textContent = "Pause";
+          playButton.style.display = "block";
+        });
+        target1.addEventListener("targetLost", () => {
+          console.log("Target 1 Lost.");
+          video2.pause();
+          toast.classList.remove("show");
+          playButton.style.display = "none";
+          if (currentActiveVideo === video2) currentActiveVideo = null;
+        });
+
+        // --- NEW: Target 2 (Anindya Sir) Events ---
+        target2.addEventListener("targetFound", () => {
+          console.log("Target 2 Found!");
+          video3.play();
+          currentActiveVideo = video3;
+
+          toast.textContent = "Anindya Sir Found!"; // NEW message
+          toast.classList.add("show");
+          playButton.textContent = "Pause";
+          playButton.style.display = "block";
+        });
+        target2.addEventListener("targetLost", () => {
+          console.log("Target 2 Lost.");
+          video3.pause();
+          toast.classList.remove("show");
+          playButton.style.display = "none";
+          if (currentActiveVideo === video3) currentActiveVideo = null;
+        });
+
+        // --- Play Button Logic (No changes needed!) ---
+        playButton.addEventListener("click", () => {
+          if (currentActiveVideo) {
+            if (currentActiveVideo.paused) {
+              currentActiveVideo.play();
+              playButton.textContent = "Pause";
+            } else {
+              currentActiveVideo.pause();
+              playButton.textContent = "Play";
+            }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
