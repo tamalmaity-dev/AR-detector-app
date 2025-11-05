@@ -12,7 +12,7 @@
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <a-assets>
-        <video id="my-video" src="./bird-video.mp4" loop="true" crossOrigin="anonymous" playsinline webkit-playsinline></video>
+        <video id="my-video" src="./bird-video.mp4" loop="true" crossOrigin="anonymous" playsinline webkit-playsinline muted="true"></video>
       </a-assets>
 
       <a-entity id="target" mindar-image-target="targetIndex: 0">
@@ -32,7 +32,10 @@
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         const target = document.querySelector('#target');
-        const video = document.querySelector('#video-player');
+        
+        // FIX #2: Select the asset video (#my-video), 
+        // not the A-Frame plane (#video-player).
+        const video = document.querySelector('#my-video');
 
         // Play video when the marker is found
         target.addEventListener('targetFound', () => {
@@ -41,7 +44,7 @@
         });
 
         // Pause video when the marker is lost
-        target.addEventListener('targetLost', () => {
+        target.addEventListener('targetLost', ()M => {
           console.log("Target Lost.");
           video.pause();
         });
