@@ -4,10 +4,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      #startButton {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 12px 24px;
+        font-size: 1.2rem;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        z-index: 10000;
+      }
+    </style>
   </head>
   
   <body>
-    <a-scene mindar-image="imageTargetSrc: ./targets.mind;" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <button id="startButton">Start AR</button>
+
+    <a-scene id="ar-scene" mindar-image="imageTargetSrc: ./targets.mind;" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" style="display: none;">
       
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
@@ -16,7 +38,6 @@
       </a-assets>
 
       <a-entity id="target" mindar-image-target="targetIndex: 0">
-        
         <a-video
           id="video-player"
           src="#my-video"
@@ -25,26 +46,43 @@
           position="0 0 0"
           rotation="0 0 0"
         ></a-video>
-
       </a-entity>
     </a-scene>
 
     <script>
+      // 4. NEW: Wrap everything in a DOMContentLoaded listener
       document.addEventListener('DOMContentLoaded', () => {
-        const target = document.querySelector('#target');
         
-        // FIX #2: Select the asset video (#my-video), 
-        // not the A-Frame plane (#video-player).
-        const video = document.querySelector('#my-video');
+        // Get all the elements
+        const sceneEl = document.querySelector('#ar-scene');
+        const startButton = document.querySelector('#startButton');
+        const target = document.querySelector('#target');
+        const video = document.querySelector('#my-video'); // Correct selector
 
-        // Play video when the marker is found
+        // 5. NEW: Add click listener for the start button
+        startButton.addEventListener('click', () => {
+          // Show the AR scene
+          sceneEl.style.display = 'block';
+
+          // Start the MindAR engine
+          sceneEl.systems['mindar-image-system'].start();
+
+          // "Prime" the video: play and immediately pause it.
+          // This "unlocks" it for script-based playback.
+          video.play();
+          video.pause();
+
+          // Hide the start button
+          startButton.style.display = 'none';
+        });
+
+        // Your existing code now works!
         target.addEventListener('targetFound', () => {
           console.log("Target Found!");
           video.play();
         });
 
-        // Pause video when the marker is lost
-        target.addEventListener('targetLost', ()M => {
+        target.addEventListener('targetLost', () => {
           console.log("Target Lost.");
           video.pause();
         });
