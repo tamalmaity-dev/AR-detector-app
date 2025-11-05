@@ -6,85 +6,174 @@
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
     <style>
+      /* Use a nice font and cover the whole screen */
       body {
-        font-family: Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        margin: 0;
+      }
+
+      /* Base styles for all UI overlays */
+      .ui-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+        background-color: rgba(0, 0, 0, 0.5);
+        /* Frosted glass effect */
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        color: white;
+        text-align: center;
+      }
+
+      /* Specific style for the Start Button UI */
+      #start-ui h1 {
+        font-size: 2rem;
+        font-weight: 700;
       }
       #startButton {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        padding: 12px 24px;
+        padding: 16px 32px;
         font-size: 1.2rem;
         background-color: #007bff;
         color: white;
         border: none;
-        border-radius: 5px;
+        border-radius: 8px;
         cursor: pointer;
-        z-index: 10000;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        transition: background-color 0.2s;
+      }
+      #startButton:hover {
+        background-color: #0056b3;
+      }
+
+      /* Style for the "Scanning..." overlay */
+      #scanning-overlay {
+        /* Hide it by default */
+        display: none;
+      }
+      /* Simple CSS loading spinner */
+      .spinner {
+        width: 60px;
+        height: 60px;
+        border: 6px solid rgba(255, 255, 255, 0.3);
+        border-top-color: #ffffff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Style for your "Target Found" message box */
+      #message-box {
+        /* Hide it by default */
+        display: none;
+        padding: 30px;
+        background-color: rgba(0, 123, 255, 0.9);
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      }
+      #message-box h2 {
+        margin: 0;
+        font-size: 1.5rem;
       }
     </style>
   </head>
   
   <body>
-    <button id="startButton">Start AR</button>
+    <div id="start-ui" class="ui-overlay">
+      <h1>My AR Experience</h1>
+      <p>Click below to start</p>
+      <button id="startButton">Start AR</button>
+    </div>
 
-    <a-scene id="ar-scene" mindar-image="imageTargetSrc: ./targets.mind;" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" style="display: none;">
-      
-      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    <div id="scanning-overlay" class="ui-overlay">
+      <div class="spinner"></div>
+      <p>Point your camera at the target image...</p>
+    </div>
 
-      <a-assets>
-        <video id="my-video" src="./bird-video.mp4" loop="true" crossOrigin="anonymous" playsinline webkit-playsinline muted="true"></video>
-      </a-assets>
+    <div id="message-box" class="ui-overlay">
+      <h2>Target Found!</h2>
+      <p>You've successfully scanned the image.</p>
+    </div>
 
+    <a-scene
+      id="ar-scene"
+      mindar-image="imageTargetSrc: ./targets.mind;"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false"
+      color-space="sRGB"
+      renderer="colorManagement: true, physicallyCorrectLights"
+    >
+      <a-camera
+        position="0 0 0"
+        look-controls="enabled: false"
+      ></a-camera>
+
+   
       <a-entity id="target" mindar-image-target="targetIndex: 0">
-        <a-video
-          id="video-player"
-          src="#my-video"
-          width="1"
-          height="0.75"
-          position="0 0 0"
-          rotation="0 0 0"
-        ></a-video>
-      </a-entity>
+  
+            <a-text
+              value="Target Found!"
+              color="white"
+              align="center"
+              width="2"
+              position="0 0.7 0" 
+              rotation="-90 0 0"
+              side="double"
+            ></a-text>
+
+</a-entity>
+      
     </a-scene>
 
     <script>
-      // 4. NEW: Wrap everything in a DOMContentLoaded listener
-      document.addEventListener('DOMContentLoaded', () => {
-        
+      document.addEventListener("DOMContentLoaded", () => {
         // Get all the elements
-        const sceneEl = document.querySelector('#ar-scene');
-        const startButton = document.querySelector('#startButton');
-        const target = document.querySelector('#target');
-        const video = document.querySelector('#my-video'); // Correct selector
+        const sceneEl = document.querySelector("#ar-scene");
+        const startUI = document.querySelector("#start-ui");
+        const startButton = document.querySelector("#startButton");
+        const scanningOverlay = document.querySelector("#scanning-overlay");
+        const messageBox = document.querySelector("#message-box");
+        const target = document.querySelector("#target");
 
-        // 5. NEW: Add click listener for the start button
-        startButton.addEventListener('click', () => {
-          // Show the AR scene
-          sceneEl.style.display = 'block';
+        // Start Button Logic
+        startButton.addEventListener("click", () => {
+          // Hide the start UI
+          startUI.style.display = "none";
+          // Show the scanning overlay
+          scanningOverlay.style.display = "flex";
 
           // Start the MindAR engine
-          sceneEl.systems['mindar-image-system'].start();
-
-          // "Prime" the video: play and immediately pause it.
-          // This "unlocks" it for script-based playback.
-          video.play();
-          video.pause();
-
-          // Hide the start button
-          startButton.style.display = 'none';
+          sceneEl.systems["mindar-image-system"].start();
         });
 
-        // Your existing code now works!
-        target.addEventListener('targetFound', () => {
+        // Target Found Logic
+        target.addEventListener("targetFound", () => {
           console.log("Target Found!");
-          video.play();
+          // Hide the scanning overlay
+          scanningOverlay.style.display = "none";
+          // Show your message box
+          messageBox.style.display = "flex";
         });
 
-        target.addEventListener('targetLost', () => {
+        // Target Lost Logic
+        target.addEventListener("targetLost", () => {
           console.log("Target Lost.");
-          video.pause();
+          // Hide your message box
+          messageBox.style.display = "none";
+          // Show the scanning overlay again
+          scanningOverlay.style.display = "flex";
         });
       });
     </script>
