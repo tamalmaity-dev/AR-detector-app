@@ -6,7 +6,7 @@
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
     <style>
-      /* --- All your CSS is perfect, no changes here --- */
+      /* --- All your previous CSS --- */
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           Helvetica, Arial, sans-serif;
@@ -57,7 +57,6 @@
         animation: fadeIn 1.5s ease-in;
       }
       .splash-subtitle {
-        /* Added your new style */
         font-size: 1.2rem;
         font-weight: 300;
         color: rgba(255, 255, 255, 0.8);
@@ -121,6 +120,22 @@
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         margin-top: 20px;
       }
+
+      /* --- 1. NEW: Style for the "How to Use" box --- */
+      .instructions {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 10px 15px;
+        margin: 15px 0;
+        max-width: 80%;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .instructions p {
+        margin: 5px 0 0 0;
+        font-size: 0.9rem;
+      }
+
+      /* --- (Rest of your CSS, no changes) --- */
       #toast-alert {
         visibility: hidden;
         opacity: 0;
@@ -194,8 +209,7 @@
     <div id="splash-screen">
       <img src="./navitro-logo.png" alt="NavitroCS Logo" class="splash-logo" />
       <h1 class="splash-title">NavitroCS</h1>
-      <h4>presents</h4>
-      <!-- <h3 class="splash-subtitle">AR Experience</h3> -->
+      <h3 class="splash-subtitle">presents</h3>
       <div class="splash-spinner"></div>
     </div>
 
@@ -205,9 +219,18 @@
 
     <div id="start-ui" class="ui-overlay">
       <img src="./navitro-logo.png" alt="NavitroCS Logo" class="start-logo" />
-      <h1>Welcome to Augmented Reality Experience!</h1>
+      <h1>Welcome to Augmented Reality!</h1>
       <h3 class="company-name">Powered by NavitroCS</h3>
       <h5>Developed by : Tamal Maity</h5>
+
+      <div class="instructions">
+        <strong>How to Use:</strong>
+        <p>
+          Point your camera at one of the target images (like the Bird, Tiger,
+          or Rocket) to see it come to life!
+        </p>
+      </div>
+
       <p>Click below to start</p>
       <button id="startButton">Start AR</button>
     </div>
@@ -219,7 +242,6 @@
       device-orientation-permission-ui="enabled: false"
     >
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-
       <a-assets>
         <video
           id="video-1"
@@ -258,7 +280,6 @@
           muted="true"
         ></video>
       </a-assets>
-
       <a-entity id="target-0" mindar-image-target="targetIndex: 0"
         ><a-video src="#video-1" width="1.4" height="1"></a-video
       ></a-entity>
@@ -271,10 +292,9 @@
       <a-entity id="target-3" mindar-image-target="targetIndex: 3"
         ><a-video src="#video-4" width="1.6" height="1"></a-video
       ></a-entity>
-
-      <a-entity id="target-4" mindar-image-target="targetIndex: 4">
-        <a-video src="#video-4" width="1.4" height="1"></a-video>
-      </a-entity>
+      <a-entity id="target-4" mindar-image-target="targetIndex: 4"
+        ><a-video src="#video-4" width="1.6" height="1"></a-video
+      ></a-entity>
     </a-scene>
 
     <script>
@@ -299,17 +319,13 @@
         const target1 = document.querySelector("#target-1");
         const target2 = document.querySelector("#target-2");
         const target3 = document.querySelector("#target-3");
-
-        // ✅ 3. NEW: Get your 5th target
         const target4 = document.querySelector("#target-4");
 
         // --- State Variables ---
         let currentActiveVideo = null;
+        let isSoundOn = true; // Your setting: sound ON by default
 
-        // ✅ 4. SOUND FIX: Your code for default sound ON is correct!
-        let isSoundOn = true; 
-
-        // --- Splash Screen Logic (No changes) ---
+        // --- Splash Screen Logic ---
         setTimeout(() => {
           splashScreen.classList.add("hidden");
           setTimeout(() => {
@@ -318,7 +334,7 @@
           }, 800);
         }, 3000);
 
-        // --- Start Button Logic (No changes) ---
+        // --- Start Button Logic ---
         startButton.addEventListener("click", () => {
           startUI.classList.remove("visible");
           sceneEl.systems["mindar-image-system"].start();
@@ -329,14 +345,14 @@
           video3.play();
           video3.pause();
           video4.play();
-          video4.pause(); // Priming video-4 automatically primes it for target-4 too
+          video4.pause();
           soundButton.style.display = "block";
           setTimeout(() => {
             startUI.style.display = "none";
           }, 800);
         });
 
-        // --- Sound Button Logic (No changes) ---
+        // --- Sound Button Logic ---
         soundButton.addEventListener("click", () => {
           isSoundOn = !isSoundOn;
           soundButton.textContent = isSoundOn ? "🔈" : "🔇";
@@ -345,7 +361,7 @@
           }
         });
 
-        // --- MODIFIED: Target Found Logic (No changes) ---
+        // --- MODIFIED: Target Found Logic ---
         const onTargetFound = (video, toastMessage) => {
           console.log(`Target Found: ${toastMessage}`);
           video.play();
@@ -357,7 +373,7 @@
           playButton.style.display = "block";
         };
 
-        // Helper function to handle 'targetLost' (No changes)
+        // Helper function to handle 'targetLost'
         const onTargetLost = (video) => {
           console.log("Target Lost");
           video.pause();
@@ -367,35 +383,29 @@
           if (currentActiveVideo === video) currentActiveVideo = null;
         };
 
-        // Attach listeners (No changes to old ones)
+        // Attach listeners
         target0.addEventListener("targetFound", () =>
           onTargetFound(video1, "Bird Target Found!")
         );
         target0.addEventListener("targetLost", () => onTargetLost(video1));
-
         target1.addEventListener("targetFound", () =>
           onTargetFound(video2, "Tiger Target Found!")
         );
         target1.addEventListener("targetLost", () => onTargetLost(video2));
-
         target2.addEventListener("targetFound", () =>
           onTargetFound(video3, "Anindya Sir Found!")
         );
         target2.addEventListener("targetLost", () => onTargetLost(video3));
-
         target3.addEventListener("targetFound", () =>
-          onTargetFound(video4, "LVM3-M5/CMS-03 Rocket Found!")
+          onTargetFound(video4, "LVM3-M5 Rocket Found!")
         );
         target3.addEventListener("targetLost", () => onTargetLost(video4));
-
-        // ✅ 5. NEW: Add listeners for your 5th target
-        // It calls the same functions for video4
         target4.addEventListener("targetFound", () =>
-          onTargetFound(video4, "LVM3-M5/CMS-03 Found!")
+          onTargetFound(video4, "Rocket Target (Alt) Found!")
         );
         target4.addEventListener("targetLost", () => onTargetLost(video4));
 
-        // --- Play Button Logic (No changes) ---
+        // --- Play Button Logic ---
         playButton.addEventListener("click", () => {
           if (currentActiveVideo) {
             if (currentActiveVideo.paused) {
@@ -411,12 +421,3 @@
     </script>
   </body>
 </html>
-
---- ### ⚠️ What You **MUST** Do This code will **not** work until you do this
-one critical step: 1. Go to the **MindAR Image Compiler**. 2. Upload **ALL 5**
-of your target images *at the same time*. 3. Download the new `targets.mind`
-file. 4. Replace your old `targets.mind` file with this new one. The order you
-upload them is their index: * `targetIndex: 0` = Your bird image * `targetIndex:
-1` = Your tiger image * `targetIndex: 2` = Your Anindya Sir image *
-`targetIndex: 3` = Your LVM3-M5 image * `targetIndex: 4` = Your new, 5th image
-
