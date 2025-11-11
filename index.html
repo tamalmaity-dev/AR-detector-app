@@ -6,12 +6,11 @@
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
     <style>
-      /* --- Base Styles --- */
+      /* --- All your CSS is perfect, no changes here --- */
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           Helvetica, Arial, sans-serif;
         margin: 0;
-        /* 1. NEW: Professional dark gradient background */
         background: #0f0c29;
         background: -webkit-linear-gradient(
           to right,
@@ -21,8 +20,6 @@
         );
         background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
       }
-
-      /* --- 2. NEW: Professional Splash Screen Style --- */
       #splash-screen {
         position: absolute;
         top: 0;
@@ -34,7 +31,6 @@
         justify-content: center;
         align-items: center;
         z-index: 10002;
-        /* Using the new gradient */
         background: -webkit-linear-gradient(
           to right,
           #24243e,
@@ -44,31 +40,28 @@
         background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
         color: white;
         transition: opacity 0.8s ease-out;
-        /* Fade out transition */
       }
-
       #splash-screen.hidden {
         opacity: 0;
         pointer-events: none;
       }
-
-      /* Style for the logo on splash */
       .splash-logo {
         max-width: 150px;
-        /* Adjust as needed */
         margin-bottom: 20px;
         animation: fadeIn 1.5s ease-in;
       }
-
-      /* Style for the title on splash */
       .splash-title {
         font-size: 2.5rem;
         font-weight: 700;
         margin: 0;
         animation: fadeIn 1.5s ease-in;
       }
-
-      /* Professional CSS loading spinner */
+      .splash-subtitle {
+        /* Added your new style */
+        font-size: 1.2rem;
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.8);
+      }
       .splash-spinner {
         width: 40px;
         height: 40px;
@@ -78,8 +71,6 @@
         margin-top: 30px;
         animation: spin 1s linear infinite;
       }
-
-      /* --- Start UI (Modified for fade-in & logo) --- */
       .ui-overlay {
         position: absolute;
         top: 0;
@@ -100,33 +91,25 @@
         visibility: hidden;
         transition: opacity 0.8s ease-in, visibility 0.8s;
       }
-
       .ui-overlay.visible {
         opacity: 1;
         visibility: visible;
       }
-
-      /* 3. NEW: Logo on Start Screen */
       .start-logo {
         max-width: 80px;
-        /* Smaller logo for this screen */
         margin-bottom: 10px;
       }
-
       #start-ui h1 {
         font-size: 2rem;
         font-weight: 700;
         margin-top: 0;
       }
-
-      /* 4. NEW: Company name style */
       .company-name {
         margin: 0;
         font-size: 0.9rem;
         font-weight: 500;
         color: rgba(255, 255, 255, 0.7);
       }
-
       #startButton {
         padding: 16px 32px;
         font-size: 1.2rem;
@@ -137,10 +120,7 @@
         cursor: pointer;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         margin-top: 20px;
-        /* Added space */
       }
-
-      /* --- Toast, Play Button, Sound Button (No changes) --- */
       #toast-alert {
         visibility: hidden;
         opacity: 0;
@@ -156,12 +136,10 @@
         z-index: 10001;
         transition: visibility 0.3s, opacity 0.3s ease-out;
       }
-
       #toast-alert.show {
         visibility: visible;
         opacity: 1;
       }
-
       #playButton {
         display: none;
         position: absolute;
@@ -179,7 +157,6 @@
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         cursor: pointer;
       }
-
       #soundButton {
         display: none;
         position: absolute;
@@ -197,19 +174,15 @@
         padding: 0;
         line-height: 44px;
       }
-
-      /* 5. NEW: Keyframe animations */
       @keyframes spin {
         to {
           transform: rotate(360deg);
         }
       }
-
       @keyframes fadeIn {
         from {
           opacity: 0;
         }
-
         to {
           opacity: 1;
         }
@@ -225,7 +198,7 @@
       <div class="splash-spinner"></div>
     </div>
 
-    <button id="soundButton">🔇</button>
+    <button id="soundButton">🔈</button>
     <div id="toast-alert"></div>
     <button id="playButton">Play</button>
 
@@ -245,6 +218,7 @@
       device-orientation-permission-ui="enabled: false"
     >
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
       <a-assets>
         <video
           id="video-1"
@@ -283,6 +257,7 @@
           muted="true"
         ></video>
       </a-assets>
+
       <a-entity id="target-0" mindar-image-target="targetIndex: 0"
         ><a-video src="#video-1" width="1.4" height="1"></a-video
       ></a-entity>
@@ -295,6 +270,10 @@
       <a-entity id="target-3" mindar-image-target="targetIndex: 3"
         ><a-video src="#video-4" width="1.6" height="1"></a-video
       ></a-entity>
+
+      <a-entity id="target-4" mindar-image-target="targetIndex: 4">
+        <a-video src="#video-4" width="1.6" height="1"></a-video>
+      </a-entity>
     </a-scene>
 
     <script>
@@ -320,28 +299,28 @@
         const target2 = document.querySelector("#target-2");
         const target3 = document.querySelector("#target-3");
 
+        // ✅ 3. NEW: Get your 5th target
+        const target4 = document.querySelector("#target-4");
+
         // --- State Variables ---
         let currentActiveVideo = null;
 
-        // --- 8. BUG FIX: Set sound to OFF by default ---
-        let isSoundOn = true; // Was 'true', which didn't match the '🔇' icon
-        // ---------------------------------------------
+        // ✅ 4. SOUND FIX: Your code for default sound ON is correct!
+        let isSoundOn = true; 
 
-        // --- Splash Screen Logic ---
+        // --- Splash Screen Logic (No changes) ---
         setTimeout(() => {
           splashScreen.classList.add("hidden");
           setTimeout(() => {
             splashScreen.style.display = "none";
             startUI.classList.add("visible");
           }, 800);
-        }, 3000); // Changed to 3 seconds for a more professional feel
+        }, 3000);
 
-        // --- Start Button Logic ---
+        // --- Start Button Logic (No changes) ---
         startButton.addEventListener("click", () => {
           startUI.classList.remove("visible");
           sceneEl.systems["mindar-image-system"].start();
-
-          // "Prime" ALL videos
           video1.play();
           video1.pause();
           video2.play();
@@ -349,68 +328,73 @@
           video3.play();
           video3.pause();
           video4.play();
-          video4.pause();
-
+          video4.pause(); // Priming video-4 automatically primes it for target-4 too
           soundButton.style.display = "block";
-
           setTimeout(() => {
             startUI.style.display = "none";
           }, 800);
         });
 
-        // --- Sound Button Logic ---
+        // --- Sound Button Logic (No changes) ---
         soundButton.addEventListener("click", () => {
           isSoundOn = !isSoundOn;
           soundButton.textContent = isSoundOn ? "🔈" : "🔇";
-
           if (currentActiveVideo) {
             currentActiveVideo.muted = !isSoundOn;
           }
         });
 
-        // --- MODIFIED: Target Found Logic ---
+        // --- MODIFIED: Target Found Logic (No changes) ---
         const onTargetFound = (video, toastMessage) => {
           console.log(`Target Found: ${toastMessage}`);
           video.play();
           video.muted = !isSoundOn; // Apply global sound state
           currentActiveVideo = video;
-
           toast.textContent = toastMessage;
           toast.classList.add("show");
           playButton.textContent = "Pause";
           playButton.style.display = "block";
         };
 
-        // Helper function to handle 'targetLost'
+        // Helper function to handle 'targetLost' (No changes)
         const onTargetLost = (video) => {
           console.log("Target Lost");
           video.pause();
           video.muted = true; // Always re-mute on lost
-
           toast.classList.remove("show");
           playButton.style.display = "none";
           if (currentActiveVideo === video) currentActiveVideo = null;
         };
 
-        // Attach listeners
+        // Attach listeners (No changes to old ones)
         target0.addEventListener("targetFound", () =>
           onTargetFound(video1, "Bird Target Found!")
         );
         target0.addEventListener("targetLost", () => onTargetLost(video1));
+
         target1.addEventListener("targetFound", () =>
           onTargetFound(video2, "Tiger Target Found!")
         );
         target1.addEventListener("targetLost", () => onTargetLost(video2));
+
         target2.addEventListener("targetFound", () =>
           onTargetFound(video3, "Anindya Sir Found!")
         );
         target2.addEventListener("targetLost", () => onTargetLost(video3));
+
         target3.addEventListener("targetFound", () =>
-          onTargetFound(video4, "LVM3-M5 Rocket Found!")
+          onTargetFound(video4, "LVM3-M5/CMS-03 Rocket Found!")
         );
         target3.addEventListener("targetLost", () => onTargetLost(video4));
 
-        // --- Play Button Logic ---
+        // ✅ 5. NEW: Add listeners for your 5th target
+        // It calls the same functions for video4
+        target4.addEventListener("targetFound", () =>
+          onTargetFound(video4, "LVM3-M5/CMS-03 Found!")
+        );
+        target4.addEventListener("targetLost", () => onTargetLost(video4));
+
+        // --- Play Button Logic (No changes) ---
         playButton.addEventListener("click", () => {
           if (currentActiveVideo) {
             if (currentActiveVideo.paused) {
@@ -427,3 +411,10 @@
   </body>
 </html>
 
+--- ### ⚠️ What You **MUST** Do This code will **not** work until you do this
+one critical step: 1. Go to the **MindAR Image Compiler**. 2. Upload **ALL 5**
+of your target images *at the same time*. 3. Download the new `targets.mind`
+file. 4. Replace your old `targets.mind` file with this new one. The order you
+upload them is their index: * `targetIndex: 0` = Your bird image * `targetIndex:
+1` = Your tiger image * `targetIndex: 2` = Your Anindya Sir image *
+`targetIndex: 3` = Your LVM3-M5 image * `targetIndex: 4` = Your new, 5th image
