@@ -6,12 +6,80 @@
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
     <style>
-      /* --- All your previous CSS goes here --- */
+      /* --- Base Styles --- */
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           Helvetica, Arial, sans-serif;
         margin: 0;
+        /* 1. NEW: Professional dark gradient background */
+        background: #0f0c29;
+        background: -webkit-linear-gradient(
+          to right,
+          #24243e,
+          #302b63,
+          #0f0c29
+        );
+        background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
       }
+
+      /* --- 2. NEW: Professional Splash Screen Style --- */
+      #splash-screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 10002;
+        /* Using the new gradient */
+        background: -webkit-linear-gradient(
+          to right,
+          #24243e,
+          #302b63,
+          #0f0c29
+        );
+        background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
+        color: white;
+        transition: opacity 0.8s ease-out;
+        /* Fade out transition */
+      }
+
+      #splash-screen.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* Style for the logo on splash */
+      .splash-logo {
+        max-width: 150px;
+        /* Adjust as needed */
+        margin-bottom: 20px;
+        animation: fadeIn 1.5s ease-in;
+      }
+
+      /* Style for the title on splash */
+      .splash-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0;
+        animation: fadeIn 1.5s ease-in;
+      }
+
+      /* Professional CSS loading spinner */
+      .splash-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top-color: #ffffff;
+        border-radius: 50%;
+        margin-top: 30px;
+        animation: spin 1s linear infinite;
+      }
+
+      /* --- Start UI (Modified for fade-in & logo) --- */
       .ui-overlay {
         position: absolute;
         top: 0;
@@ -28,11 +96,37 @@
         -webkit-backdrop-filter: blur(10px);
         color: white;
         text-align: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.8s ease-in, visibility 0.8s;
       }
+
+      .ui-overlay.visible {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      /* 3. NEW: Logo on Start Screen */
+      .start-logo {
+        max-width: 80px;
+        /* Smaller logo for this screen */
+        margin-bottom: 10px;
+      }
+
       #start-ui h1 {
         font-size: 2rem;
         font-weight: 700;
+        margin-top: 0;
       }
+
+      /* 4. NEW: Company name style */
+      .company-name {
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.7);
+      }
+
       #startButton {
         padding: 16px 32px;
         font-size: 1.2rem;
@@ -42,9 +136,13 @@
         border-radius: 8px;
         cursor: pointer;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        margin-top: 20px;
+        /* Added space */
       }
+
+      /* --- Toast, Play Button, Sound Button (No changes) --- */
       #toast-alert {
-        visibility: hidden; 
+        visibility: hidden;
         opacity: 0;
         position: absolute;
         bottom: 90px;
@@ -58,12 +156,14 @@
         z-index: 10001;
         transition: visibility 0.3s, opacity 0.3s ease-out;
       }
+
       #toast-alert.show {
         visibility: visible;
         opacity: 1;
       }
+
       #playButton {
-        display: none; 
+        display: none;
         position: absolute;
         bottom: 20px;
         left: 50%;
@@ -79,16 +179,61 @@
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         cursor: pointer;
       }
+
+      #soundButton {
+        display: none;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 10001;
+        background-color: rgba(0, 0, 0, 0.4);
+        border: none;
+        color: white;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0;
+        line-height: 44px;
+      }
+
+      /* 5. NEW: Keyframe animations */
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+
+        to {
+          opacity: 1;
+        }
+      }
     </style>
   </head>
-  
+
   <body>
+    <div id="splash-screen">
+      <img src="./navitro-logo.png" alt="NavitroCS Logo" class="splash-logo" />
+      <h1 class="splash-title">NavitroCS</h1>
+      <h3 class="splash-subtitle">AR Experience</h3>
+      <div class="splash-spinner"></div>
+    </div>
+
+    <button id="soundButton">🔇</button>
     <div id="toast-alert"></div>
     <button id="playButton">Play</button>
 
     <div id="start-ui" class="ui-overlay">
-      <h1>Welcome to Tamal’s Augmented Reality Experience!</h1>
-      <h4>Developed by : Tamal Maity</h4>
+      <img src="./navitro-logo.png" alt="NavitroCS Logo" class="start-logo" />
+      <h1>Welcome to Augmented Reality Experience!</h1>
+      <h3 class="company-name">Powered by NavitroCS</h3>
+      <h5>Developed by : Tamal Maity</h5>
       <p>Click below to start</p>
       <button id="startButton">Start AR</button>
     </div>
@@ -99,203 +244,185 @@
       vr-mode-ui="enabled: false"
       device-orientation-permission-ui="enabled: false"
     >
-      <a-camera
-        position="0 0 0"
-        look-controls="enabled: false"
-      ></a-camera>
-
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
       <a-assets>
-        <video 
-          id="video-1" 
-          src="./bird-video.mp4" 
-          loop="true" crossOrigin="anonymous" playsinline webkit-playsinline muted="true"
+        <video
+          id="video-1"
+          src="./bird-video.mp4"
+          loop="true"
+          crossorigin="anonymous"
+          playsinline
+          webkit-playsinline
+          muted="true"
         ></video>
-        <video 
-          id="video-2" 
-          src="./tiger-video.mp4" 
-          loop="true" crossOrigin="anonymous" playsinline webkit-playsinline muted="true"
+        <video
+          id="video-2"
+          src="./tiger-video.mp4"
+          loop="true"
+          crossorigin="anonymous"
+          playsinline
+          webkit-playsinline
+          muted="true"
         ></video>
-        <video 
-          id="video-3" 
-          src="./anindya-sir-video.mp4" 
-          loop="true" crossOrigin="anonymous" playsinline webkit-playsinline muted="true"
+        <video
+          id="video-3"
+          src="./anindya-sir-video.mp4"
+          loop="true"
+          crossorigin="anonymous"
+          playsinline
+          webkit-playsinline
+          muted="true"
         ></video>
-        <video 
-          id="video-4" 
-          src="./LVM3-M5-video.mp4" 
-          loop="true" crossOrigin="anonymous" playsinline webkit-playsinline muted="true"
+        <video
+          id="video-4"
+          src="./LVM3-M5-video.mp4"
+          loop="true"
+          crossorigin="anonymous"
+          playsinline
+          webkit-playsinline
+          muted="true"
         ></video>
       </a-assets>
-      
-      <a-entity id="target-0" mindar-image-target="targetIndex: 0">
-        <a-video
-          src="#video-1"
-          width="1.4"
-          height="1"
-        ></a-video>
-      </a-entity>
-
-      <a-entity id="target-1" mindar-image-target="targetIndex: 1">
-        <a-video
-          src="#video-2"
-          width="1.4"
-          height="1" 
-        ></a-video>
-      </a-entity>
-      
-      <a-entity id="target-2" mindar-image-target="targetIndex: 2">
-        <a-video
-          src="#video-3"
-          width="1"
-          height="1.2" ></a-video>
-      </a-entity>
-
-       <a-entity id="target-3" mindar-image-target="targetIndex: 3">
-         <a-video
-          src="#video-4"
-          width="1.2"
-          height="1" ></a-video>
-      </a-entity>
-
+      <a-entity id="target-0" mindar-image-target="targetIndex: 0"
+        ><a-video src="#video-1" width="1.4" height="1"></a-video
+      ></a-entity>
+      <a-entity id="target-1" mindar-image-target="targetIndex: 1"
+        ><a-video src="#video-2" width="1.4" height="1"></a-video
+      ></a-entity>
+      <a-entity id="target-2" mindar-image-target="targetIndex: 2"
+        ><a-video src="#video-3" width="1" height="1.2"></a-video
+      ></a-entity>
+      <a-entity id="target-3" mindar-image-target="targetIndex: 3"
+        ><a-video src="#video-4" width="1.6" height="1"></a-video
+      ></a-entity>
     </a-scene>
 
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    // Get UI elements
-    const sceneEl = document.querySelector("#ar-scene");
-    const startUI = document.querySelector("#start-ui");
-    const startButton = document.querySelector("#startButton");
-    const playButton = document.querySelector("#playButton");
-    const toast = document.querySelector("#toast-alert");
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Get ALL UI elements
+        const splashScreen = document.querySelector("#splash-screen");
+        const startUI = document.querySelector("#start-ui");
+        const startButton = document.querySelector("#startButton");
+        const sceneEl = document.querySelector("#ar-scene");
+        const playButton = document.querySelector("#playButton");
+        const toast = document.querySelector("#toast-alert");
+        const soundButton = document.querySelector("#soundButton");
 
-    // Get video assets
-    const video1 = document.querySelector("#video-1");
-    const video2 = document.querySelector("#video-2");
-    const video3 = document.querySelector("#video-3");
-    const video4 = document.querySelector("#video-4"); // LVM3-M5 Rocket
+        // Get video assets
+        const video1 = document.querySelector("#video-1");
+        const video2 = document.querySelector("#video-2");
+        const video3 = document.querySelector("#video-3");
+        const video4 = document.querySelector("#video-4");
 
-    // Get target entities
-    const target0 = document.querySelector("#target-0");
-    const target1 = document.querySelector("#target-1");
-    const target2 = document.querySelector("#target-2");
-    const target3 = document.querySelector("#target-3"); // LVM3-M5 Rocket
-    
-    // Keep track of which video is active
-    let currentActiveVideo = null;
+        // Get target entities
+        const target0 = document.querySelector("#target-0");
+        const target1 = document.querySelector("#target-1");
+        const target2 = document.querySelector("#target-2");
+        const target3 = document.querySelector("#target-3");
 
-    // Start Button Logic
-    startButton.addEventListener("click", () => {
-      startUI.style.display = "none";
-      sceneEl.systems["mindar-image-system"].start();
-      
-      // "Prime" ALL videos
-      video1.play(); video1.pause();
-      video2.play(); video2.pause();
-      video3.play(); video3.pause();
-      video4.play(); video4.pause(); 
-    });
+        // --- State Variables ---
+        let currentActiveVideo = null;
 
-    // --- Target 0 (Bird) Events ---
-    target0.addEventListener("targetFound", () => {
-      console.log("Target 0 Found!");
-      video1.play();
-      currentActiveVideo = video1;
-      
-      toast.textContent = "Bird Target Found!";
-      toast.classList.add("show");
-      playButton.textContent = "Pause";
-      playButton.style.display = "block";
-    });
-    target0.addEventListener("targetLost", () => {
-      console.log("Target 0 Lost.");
-      video1.pause();
-      video1.muted = false; // ✅ **NEW: Re-play with sound video**
-      toast.classList.remove("show");
-      playButton.style.display = "none";
-      if (currentActiveVideo === video1) currentActiveVideo = null;
-    });
-    
-    // --- Target 1 (Tiger) Events ---
-    target1.addEventListener("targetFound", () => {
-      console.log("Target 1 Found!");
-      video2.play();
-      currentActiveVideo = video2;
+        // --- 8. BUG FIX: Set sound to OFF by default ---
+        let isSoundOn = false; // Was 'true', which didn't match the '🔇' icon
+        // ---------------------------------------------
 
-      toast.textContent = "Tiger Target Found!";
-      toast.classList.add("show");
-      playButton.textContent = "Pause";
-      playButton.style.display = "block";
-    });
-    target1.addEventListener("targetLost", () => {
-      console.log("Target 1 Lost.");
-      video2.pause();
-      video2.muted = true; // ✅ **NEW: Re-mute video**
-      toast.classList.remove("show");
-      playButton.style.display = "none";
-      if (currentActiveVideo === video2) currentActiveVideo = null;
-    });
+        // --- Splash Screen Logic ---
+        setTimeout(() => {
+          splashScreen.classList.add("hidden");
+          setTimeout(() => {
+            splashScreen.style.display = "none";
+            startUI.classList.add("visible");
+          }, 800);
+        }, 3000); // Changed to 3 seconds for a more professional feel
 
-    // --- Target 2 (Anindya Sir) Events ---
-    target2.addEventListener("targetFound", () => {
-      console.log("Target 2 Found!");
-      video3.play();
-      currentActiveVideo = video3;
+        // --- Start Button Logic ---
+        startButton.addEventListener("click", () => {
+          startUI.classList.remove("visible");
+          sceneEl.systems["mindar-image-system"].start();
 
-      toast.textContent = "Anindya Sir Found!";
-      toast.classList.add("show");
-      playButton.textContent = "Pause";
-      playButton.style.display = "block";
-    });
-    target2.addEventListener("targetLost", () => {
-      console.log("Target 2 Lost.");
-      video3.pause();
-      video3.muted = true; // ✅ **NEW: Re-mute video**
-      toast.classList.remove("show");
-      playButton.style.display = "none";
-      if (currentActiveVideo === video3) currentActiveVideo = null;
-    });
+          // "Prime" ALL videos
+          video1.play();
+          video1.pause();
+          video2.play();
+          video2.pause();
+          video3.play();
+          video3.pause();
+          video4.play();
+          video4.pause();
 
-    // --- Target 3 (LVM3-M5 Rocket) Events ---
-    target3.addEventListener("targetFound", () => {
-      console.log("Target 3 Found!");
-      video4.play();
-      currentActiveVideo = video4;
+          soundButton.style.display = "block";
 
-      toast.textContent = "LVM3-M5 Rocket Found!"; 
-      toast.classList.add("show");
-      playButton.textContent = "Pause";
-      playButton.style.display = "block";
-    });
-    target3.addEventListener("targetLost", () => {
-      console.log("Target 3 Lost.");
-      video4.pause();
-      video4.muted = false; // ✅ **NEW: Re-mute video**
-      toast.classList.remove("show");
-      playButton.style.display = "none";
-      if (currentActiveVideo === video4) currentActiveVideo = null;
-    });
-    
-    // --- ✅ NEW: Play Button Logic (with Unmute) ---
-    playButton.addEventListener("click", () => {
-      if (currentActiveVideo) {
-        
-        // **This is the new part:**
-        // On the first click, unmute the video
-        if (currentActiveVideo.muted) {
-          currentActiveVideo.muted = false;
-        }
+          setTimeout(() => {
+            startUI.style.display = "none";
+          }, 800);
+        });
 
-        // This is the old part:
-        if (currentActiveVideo.paused) {
-          currentActiveVideo.play();
+        // --- Sound Button Logic ---
+        soundButton.addEventListener("click", () => {
+          isSoundOn = !isSoundOn;
+          soundButton.textContent = isSoundOn ? "🔈" : "🔇";
+
+          if (currentActiveVideo) {
+            currentActiveVideo.muted = !isSoundOn;
+          }
+        });
+
+        // --- MODIFIED: Target Found Logic ---
+        const onTargetFound = (video, toastMessage) => {
+          console.log(`Target Found: ${toastMessage}`);
+          video.play();
+          video.muted = !isSoundOn; // Apply global sound state
+          currentActiveVideo = video;
+
+          toast.textContent = toastMessage;
+          toast.classList.add("show");
           playButton.textContent = "Pause";
-        } else {
-          currentActiveVideo.pause();
-          playButton.textContent = "Play";
-        }
-      }
-    });
-  });
-</script>
+          playButton.style.display = "block";
+        };
+
+        // Helper function to handle 'targetLost'
+        const onTargetLost = (video) => {
+          console.log("Target Lost");
+          video.pause();
+          video.muted = true; // Always re-mute on lost
+
+          toast.classList.remove("show");
+          playButton.style.display = "none";
+          if (currentActiveVideo === video) currentActiveVideo = null;
+        };
+
+        // Attach listeners
+        target0.addEventListener("targetFound", () =>
+          onTargetFound(video1, "Bird Target Found!")
+        );
+        target0.addEventListener("targetLost", () => onTargetLost(video1));
+        target1.addEventListener("targetFound", () =>
+          onTargetFound(video2, "Tiger Target Found!")
+        );
+        target1.addEventListener("targetLost", () => onTargetLost(video2));
+        target2.addEventListener("targetFound", () =>
+          onTargetFound(video3, "Anindya Sir Found!")
+        );
+        target2.addEventListener("targetLost", () => onTargetLost(video3));
+        target3.addEventListener("targetFound", () =>
+          onTargetFound(video4, "LVM3-M5 Rocket Found!")
+        );
+        target3.addEventListener("targetLost", () => onTargetLost(video4));
+
+        // --- Play Button Logic ---
+        playButton.addEventListener("click", () => {
+          if (currentActiveVideo) {
+            if (currentActiveVideo.paused) {
+              currentActiveVideo.play();
+              playButton.textContent = "Pause";
+            } else {
+              currentActiveVideo.pause();
+              playButton.textContent = "Play";
+            }
+          }
+        });
+      });
+    </script>
   </body>
 </html>
