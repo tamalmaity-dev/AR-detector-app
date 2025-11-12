@@ -6,7 +6,7 @@
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
     <style>
-      /* --- All your previous CSS --- */
+      /* --- Base Styles --- */
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           Helvetica, Arial, sans-serif;
@@ -19,7 +19,12 @@
           #0f0c29
         );
         background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
+        
+        /* ✅ 1. NEW: Set body height and hide its overflow */
+        height: 100vh;
+        overflow: hidden;
       }
+      
       #splash-screen {
         position: absolute;
         top: 0;
@@ -70,15 +75,20 @@
         margin-top: 30px;
         animation: spin 1s linear infinite;
       }
+
+      /* --- ✅ 2. MODIFIED: UI Overlay Fix --- */
       .ui-overlay {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
-        height: 100%;
+        height: 100%; /* Use height 100% to fill the body */
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        
+        /* Change 'center' to 'flex-start' */
+        justify-content: flex-start; /* This ensures content starts at the top */
+        
         align-items: center;
         z-index: 10000;
         background-color: rgba(0, 0, 0, 0.5);
@@ -89,7 +99,17 @@
         opacity: 0;
         visibility: hidden;
         transition: opacity 0.8s ease-in, visibility 0.8s;
+
+        /* Add scrolling for short screens */
+        overflow-y: auto; 
+        
+        /* Add padding so content doesn't touch edges */
+        padding: 40px 10px; 
+
+        /* Makes padding work with height: 100% */
+        box-sizing: border-box; 
       }
+      
       .ui-overlay.visible {
         opacity: 1;
         visibility: visible;
@@ -97,6 +117,8 @@
       .start-logo {
         max-width: 80px;
         margin-bottom: 10px;
+        /* NEW: Add a little space at the very top */
+        margin-top: 20px;
       }
       #start-ui h1 {
         font-size: 2rem;
@@ -119,9 +141,11 @@
         cursor: pointer;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         margin-top: 20px;
+        /* NEW: Add space below the button for scrolling */
+        margin-bottom: 20px;
       }
 
-      /* --- 1. NEW: Style for the "How to Use" box --- */
+      /* --- Instructions Box --- */
       .instructions {
         background-color: rgba(255, 255, 255, 0.1);
         border-radius: 8px;
@@ -421,4 +445,3 @@
     </script>
   </body>
 </html>
-
